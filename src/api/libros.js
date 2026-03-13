@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-export const urlBase = 'http://localhost:2603/api/libros'
-
+export const urlBase = 'https://biblio-backend-ktep.onrender.com/api/libros'
 const api = axios.create({
   baseURL: urlBase,
 })
