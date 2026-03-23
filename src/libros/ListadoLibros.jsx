@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { listarLibros, eliminarLibro } from '../api/libros'
+import { listarLibros } from '../api/libros'
 import HeroColeccion from '../componentes/HeroColeccion'
-import ModalConfirmacion from '../componentes/ModalConfirmacion'
 import Toast from '../componentes/Toast'
 
 const renderEstrellas = (rating) => {
@@ -22,10 +21,6 @@ const SkeletonCard = () => (
       <div className="p-3">
         <div style={{ height: '18px', borderRadius: '6px', marginBottom: '10px', background: 'linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%)', backgroundSize: '800px 100%', animation: 'shimmer 1.4s infinite linear' }} />
         <div style={{ height: '13px', width: '70%', borderRadius: '6px', marginBottom: '16px', background: 'linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%)', backgroundSize: '800px 100%', animation: 'shimmer 1.4s infinite linear' }} />
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <div style={{ height: '32px', flex: 1, borderRadius: '8px', background: 'linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%)', backgroundSize: '800px 100%', animation: 'shimmer 1.4s infinite linear' }} />
-          <div style={{ height: '32px', flex: 1, borderRadius: '8px', background: 'linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%)', backgroundSize: '800px 100%', animation: 'shimmer 1.4s infinite linear' }} />
-        </div>
       </div>
     </div>
   </div>
@@ -68,11 +63,6 @@ function ListadoLibros({ busqueda = '' }) {
   const [generoActivo, setGeneroActivo]   = useState(null)
   const [autorActivo, setAutorActivo]     = useState(null)
 
-  // Estado del modal
-  const [modalVisible, setModalVisible]     = useState(false)
-  const [libroAEliminar, setLibroAEliminar] = useState(null)
-
-  // Estado del Toast
   const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: 'success' })
 
   const mostrarToast = (mensaje, tipo = 'success') => {
@@ -93,27 +83,6 @@ function ListadoLibros({ busqueda = '' }) {
 
   const handleImageError = (id) => {
     setPortadasError(prev => ({ ...prev, [id]: true }))
-  }
-
-  // Abre el modal con el libro seleccionado
-  const handleEliminarClick = (libro) => {
-    setLibroAEliminar(libro)
-    setModalVisible(true)
-  }
-
-  // Confirma la eliminación
-  const handleConfirmarEliminar = async () => {
-    try {
-      await eliminarLibro(libroAEliminar.id)
-      // Actualizar estado local sin llamar al backend de nuevo
-      setLibros(prev => prev.filter(l => l.id !== libroAEliminar.id))
-      mostrarToast(`"${libroAEliminar.titulo}" eliminado correctamente.`, 'success')
-    } catch (err) {
-      mostrarToast('Error al eliminar el libro.', 'danger')
-    } finally {
-      setModalVisible(false)
-      setLibroAEliminar(null)
-    }
   }
 
   const generosUnicos = useMemo(() =>
@@ -238,14 +207,22 @@ function ListadoLibros({ busqueda = '' }) {
         </div>
       )}
 
-      {/* Grid de cards */}
+      {/* Grid de cards — toda la card es clickeable */}
       {!cargando && librosFiltrados.length > 0 && (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
           {librosFiltrados.map((libro, index) => (
             <div key={libro.id} className="col" style={{ animation: 'fadeInUp 0.5s ease both', animationDelay: `${index * 0.07}s` }}>
               <div
                 className="h-100"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease' }}
+                onClick={() => navigate(`/libros/${libro.id}`)}
+                style={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
+                  cursor: 'pointer',
+                }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-6px) scale(1.01)'
                   e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.5)'
@@ -257,11 +234,8 @@ function ListadoLibros({ busqueda = '' }) {
                   e.currentTarget.style.borderColor = 'var(--border)'
                 }}
               >
-                {/* Portada clickeable */}
-                <div
-                  onClick={() => navigate(`/libros/${libro.id}`)}
-                  style={{ position: 'relative', aspectRatio: '2/3', overflow: 'hidden', cursor: 'pointer' }}
-                >
+                {/* Portada */}
+                <div style={{ position: 'relative', aspectRatio: '2/3', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: 'rgba(8,11,20,0.7)', backdropFilter: 'blur(6px)', color: 'var(--muted)', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '20px', border: '1px solid var(--border)' }}>
                     #{String(libro.id).padStart(3, '0')}
                   </div>
@@ -288,12 +262,7 @@ function ListadoLibros({ busqueda = '' }) {
 
                 {/* Cuerpo */}
                 <div className="p-3 d-flex flex-column" style={{ gap: '0.4rem' }}>
-                  <h6
-                    onClick={() => navigate(`/libros/${libro.id}`)}
-                    style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text)', fontWeight: 700, marginBottom: 0, lineHeight: 1.3, cursor: 'pointer' }}
-                    onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text)'}
-                  >
+                  <h6 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text)', fontWeight: 700, marginBottom: 0, lineHeight: 1.3 }}>
                     {libro.titulo}
                   </h6>
                   <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: 0 }}>
@@ -310,24 +279,6 @@ function ListadoLibros({ busqueda = '' }) {
                     )}
                     {renderEstrellas(libro.rating || 0)}
                   </div>
-                </div>
-
-                {/* Footer */}
-                <div className="px-3 pb-3 d-flex gap-2">
-                  <button
-                    onClick={() => navigate(`/editar/${libro.id}`)}
-                    className="btn btn-sm flex-fill"
-                    style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--blue-acc)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '8px', fontSize: '0.8rem' }}
-                  >
-                    <i className="bi bi-pencil-fill me-1"></i>Editar
-                  </button>
-                  <button
-                    onClick={() => handleEliminarClick(libro)}
-                    className="btn btn-sm flex-fill"
-                    style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--red-acc)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '8px', fontSize: '0.8rem' }}
-                  >
-                    <i className="bi bi-trash3-fill me-1"></i>Eliminar
-                  </button>
                 </div>
               </div>
             </div>
@@ -359,20 +310,6 @@ function ListadoLibros({ busqueda = '' }) {
         </div>
       )}
 
-      {/* Modal de confirmación */}
-      <ModalConfirmacion
-        visible={modalVisible}
-        titulo="¿Eliminar libro?"
-        mensaje="Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar"
-        nombreLibro={libroAEliminar?.titulo}
-        onConfirmar={handleConfirmarEliminar}
-        onCancelar={() => {
-          setModalVisible(false)
-          setLibroAEliminar(null)
-        }}
-      />
-
-      {/* Toast */}
       <Toast
         visible={toast.visible}
         mensaje={toast.mensaje}
