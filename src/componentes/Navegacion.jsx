@@ -1,9 +1,19 @@
+// src/componentes/Navegacion.jsx
+// El navbar es la barra de navegación que se ve en todas las páginas
+// Ahora muestra el avatar del usuario logueado y permite cerrar sesión
+
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexto/AuthContext'
 
 function Navegacion({ onBuscar }) {
   const [textoBusqueda, setTextoBusqueda] = useState('')
-  const location = useLocation()
+  // menuAbierto controla si se muestra el menú desplegable del usuario
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  const location  = useLocation()
+  const navigate  = useNavigate()
+  const { usuario, logueado, cerrarSesion } = useAuth()
+  // Leemos el contexto global — si hay usuario logueado, lo mostramos
 
   const handleBusqueda = (valor) => {
     setTextoBusqueda(valor)
@@ -13,6 +23,12 @@ function Navegacion({ onBuscar }) {
   const limpiarBusqueda = () => {
     setTextoBusqueda('')
     onBuscar('')
+  }
+
+  const handleCerrarSesion = () => {
+    cerrarSesion()        // Borra el token y limpia el contexto
+    setMenuAbierto(false)
+    navigate('/login')    // Manda al usuario a la pantalla de login
   }
 
   const esActivo = (path) => location.pathname === path
@@ -28,6 +44,12 @@ function Navegacion({ onBuscar }) {
     border: esActivo(path) ? '1px solid var(--gold)' : '1px solid transparent',
     transition: 'all 0.2s ease',
   })
+
+  // Genera las iniciales del usuario para el avatar de texto
+  // Si el nombre es "Juan Pérez", las iniciales son "JP"
+  const iniciales = usuario?.nombre
+    ? usuario.nombre.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : '?'
 
   return (
     <nav
@@ -58,73 +80,212 @@ function Navegacion({ onBuscar }) {
           Biblioteca
         </Link>
 
-        {/* Links */}
-        <div className="d-flex gap-2">
-          <Link to="/" style={estiloLink('/')}>
-            <i className="bi bi-collection me-1"></i>
-            Colección
-          </Link>
-          <Link to="/agregar" style={estiloLink('/agregar')}>  {/* [NUEVO] */}
-            <i className="bi bi-plus-lg me-1"></i>
-            Agregar
-          </Link>
-        </div>
+        {/* Links — solo se muestran si está logueado */}
+        {logueado && (
+          <div className="d-flex gap-2">
+            <Link to="/" style={estiloLink('/')}>
+              <i className="bi bi-collection me-1"></i>
+              Colección
+            </Link>
+            <Link to="/agregar" style={estiloLink('/agregar')}>
+              <i className="bi bi-plus-lg me-1"></i>
+              Agregar
+            </Link>
+          </div>
+        )}
 
-        {/* Search bar */}
-        <div
-          className="d-flex align-items-center ms-auto"
-          style={{
-            background: 'var(--surface2)',
-            border: '1px solid var(--border)',
-            borderRadius: '10px',
-            padding: '6px 12px',
-            gap: '8px',
-            minWidth: '220px',
-            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-          }}
-          onFocus={e => {
-            e.currentTarget.style.borderColor = 'var(--gold)'
-            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(244,196,48,0.1)'
-          }}
-          onBlur={e => {
-            e.currentTarget.style.borderColor = 'var(--border)'
-            e.currentTarget.style.boxShadow = 'none'
-          }}
-        >
-          <i className="bi bi-search" style={{ color: 'var(--muted)', fontSize: '0.85rem' }}></i>
-          <input
-            type="text"
-            value={textoBusqueda}
-            onChange={e => handleBusqueda(e.target.value)}
-            placeholder="Buscar libros..."
+        {/* Search bar — solo se muestra si está logueado */}
+        {logueado && (
+          <div
+            className="d-flex align-items-center"
             style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              color: 'var(--text)',
-              fontSize: '0.88rem',
-              flex: 1,
-              width: '100%',
+              background: 'var(--surface2)',
+              border: '1px solid var(--border)',
+              borderRadius: '10px',
+              padding: '6px 12px',
+              gap: '8px',
+              minWidth: '220px',
+              transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
             }}
-          />
-          {textoBusqueda && (
-            <button
-              onClick={limpiarBusqueda}
+            onFocus={e => {
+              e.currentTarget.style.borderColor = 'var(--gold)'
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(244,196,48,0.1)'
+            }}
+            onBlur={e => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
+          >
+            <i className="bi bi-search" style={{ color: 'var(--muted)', fontSize: '0.85rem' }}></i>
+            <input
+              type="text"
+              value={textoBusqueda}
+              onChange={e => handleBusqueda(e.target.value)}
+              placeholder="Buscar libros..."
               style={{
-                background: 'none',
+                background: 'transparent',
                 border: 'none',
-                color: 'var(--muted)',
-                cursor: 'pointer',
-                padding: 0,
-                lineHeight: 1,
-                fontSize: '1rem',
+                outline: 'none',
+                color: 'var(--text)',
+                fontSize: '0.88rem',
+                flex: 1,
+                width: '100%',
               }}
-            >
-              <i className="bi bi-x"></i>
-            </button>
+            />
+            {textoBusqueda && (
+              <button
+                onClick={limpiarBusqueda}
+                style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', padding: 0, lineHeight: 1, fontSize: '1rem' }}
+              >
+                <i className="bi bi-x"></i>
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Sección derecha */}
+        <div className="ms-auto d-flex align-items-center gap-2">
+
+          {/* Si NO está logueado — botones de login/registro */}
+          {!logueado && (
+            <>
+              <Link
+                to="/login"
+                style={{
+                  textDecoration: 'none',
+                  padding: '6px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.88rem',
+                  fontWeight: 500,
+                  color: 'var(--muted)',
+                  border: '1px solid var(--border)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}
+              >
+                Ingresar
+              </Link>
+              <Link
+                to="/registro"
+                style={{
+                  textDecoration: 'none',
+                  padding: '6px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  color: '#080b14',
+                  background: 'var(--gold)',
+                  border: '1px solid var(--gold)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Registrarse
+              </Link>
+            </>
+          )}
+
+          {/* Si SÍ está logueado — avatar con menú desplegable */}
+          {logueado && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setMenuAbierto(!menuAbierto)}
+                style={{
+                  background: 'var(--gold)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '38px',
+                  height: '38px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  color: '#080b14',
+                  // Si el usuario tiene foto, la mostramos como fondo
+                  backgroundImage: usuario?.foto_perfil ? `url(${usuario.foto_perfil})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
+                {/* Si no hay foto, mostramos las iniciales */}
+                {!usuario?.foto_perfil && iniciales}
+              </button>
+
+              {/* Menú desplegable */}
+              {menuAbierto && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '46px',
+                    right: 0,
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '12px',
+                    padding: '0.5rem',
+                    minWidth: '180px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                    zIndex: 200,
+                    animation: 'fadeInUp 0.15s ease both',
+                  }}
+                >
+                  {/* Nombre del usuario */}
+                  <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)', marginBottom: '0.4rem' }}>
+                    <p style={{ color: 'var(--text)', fontSize: '0.85rem', fontWeight: 600, marginBottom: 0 }}>
+                      {usuario?.nombre}
+                    </p>
+                    <p style={{ color: 'var(--muted)', fontSize: '0.75rem', marginBottom: 0 }}>
+                      {usuario?.email}
+                    </p>
+                  </div>
+
+                  {/* Opción: Ver perfil */}
+                  <button
+                    onClick={() => { navigate('/perfil'); setMenuAbierto(false) }}
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--muted)',
+                      fontSize: '0.85rem',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)' }}
+                  >
+                    <i className="bi bi-person-circle me-2"></i>Mi perfil
+                  </button>
+
+                  {/* Opción: Cerrar sesión */}
+                  <button
+                    onClick={handleCerrarSesion}
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--red-acc)',
+                      fontSize: '0.85rem',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <i className="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
-
       </div>
     </nav>
   )
