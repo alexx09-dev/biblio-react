@@ -9,7 +9,7 @@ import { useAuth } from '../contexto/AuthContext'
 
 function Registro() {
   const navigate = useNavigate()
-  const { iniciarSesion } = useAuth()
+  const { login } = useAuth()
 
   const [form, setForm] = useState({
     nombre: '',
@@ -47,7 +47,7 @@ function Registro() {
         fecha_nacimiento: form.fecha_nacimiento || null,
       }
       const data = await registrarUsuario(payload)
-      iniciarSesion(data.usuario)
+      login(data.usuario)
       navigate('/')   // Redirige al inicio después del registro
     } catch (err) {
       setError(err.response?.data?.detail || 'Error al crear la cuenta.')
