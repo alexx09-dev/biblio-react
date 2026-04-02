@@ -1,12 +1,9 @@
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '../contexto/AuthContext'
 
 function RutaProtegida({ children }) {
-  const token = localStorage.getItem('token')
-  
-  if (!token) {
-    return <Navigate to="/login" replace />
-  }
-  
+  const { logueado } = useAuth()
+  if (!logueado) return <Navigate to="/login" replace />
   return children
 }
 
