@@ -40,10 +40,7 @@ function DetalleLibro() {
   useEffect(() => {
     obtenerLibroPorId(id)
       .then(datos => setLibro(datos))
-      .catch(err => {
-        console.error('Error al cargar libro:', err)
-        navigate('/')
-      })
+      .catch(err => { console.error('Error al cargar libro:', err); navigate('/') })
       .finally(() => setCargando(false))
   }, [id])
 
@@ -62,22 +59,15 @@ function DetalleLibro() {
   return (
     <div className="container py-4" style={{ maxWidth: '1000px' }}>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '24px', padding: '2.5rem', animation: 'slideInUp 0.4s ease both' }}>
-        {cargando ? (
-          <SkeletonDetalle />
-        ) : libro ? (
+        {cargando ? <SkeletonDetalle /> : libro ? (
           <div className="row g-5">
 
-            {/* Columna izquierda — Portada + metadatos */}
+            {/* Columna izquierda */}
             <div className="col-12 col-md-4">
               <div style={{ aspectRatio: '2/3', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)', boxShadow: '-8px 12px 40px rgba(0,0,0,0.6)', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--gold)', zIndex: 2 }} />
                 {libro.isbn && !portadaError ? (
-                  <img
-                    src={`https://covers.openlibrary.org/b/isbn/${libro.isbn}-L.jpg`}
-                    alt={`Portada de ${libro.titulo}`}
-                    onError={() => setPortadaError(true)}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
+                  <img src={`https://covers.openlibrary.org/b/isbn/${libro.isbn}-L.jpg`} alt={`Portada de ${libro.titulo}`} onError={() => setPortadaError(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 ) : (
                   <div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, var(--surface2) 0%, var(--bg) 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.5rem' }}>
                     <span style={{ fontSize: '4rem', opacity: 0.3 }}>📖</span>
@@ -88,32 +78,15 @@ function DetalleLibro() {
 
               {(libro.anio || libro.isbn || libro.genero) && (
                 <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  {libro.anio && (
-                    <div className="d-flex align-items-center gap-2">
-                      <span style={{ fontSize: '0.9rem' }}>📅</span>
-                      <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Año: <span style={{ color: 'var(--text)' }}>{libro.anio}</span></span>
-                    </div>
-                  )}
-                  {libro.isbn && (
-                    <div className="d-flex align-items-center gap-2">
-                      <span style={{ fontSize: '0.9rem' }}>🌍</span>
-                      <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>ISBN: <span style={{ color: 'var(--text)' }}>{libro.isbn}</span></span>
-                    </div>
-                  )}
-                  {libro.genero && (
-                    <div className="d-flex align-items-center gap-2">
-                      <span style={{ fontSize: '0.9rem' }}>📚</span>
-                      <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Género: <span style={{ color: 'var(--text)' }}>{libro.genero}</span></span>
-                    </div>
-                  )}
+                  {libro.anio && <div className="d-flex align-items-center gap-2"><span>📅</span><span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Año: <span style={{ color: 'var(--text)' }}>{libro.anio}</span></span></div>}
+                  {libro.isbn && <div className="d-flex align-items-center gap-2"><span>🌍</span><span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>ISBN: <span style={{ color: 'var(--text)' }}>{libro.isbn}</span></span></div>}
+                  {libro.genero && <div className="d-flex align-items-center gap-2"><span>📚</span><span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Género: <span style={{ color: 'var(--text)' }}>{libro.genero}</span></span></div>}
                 </div>
               )}
             </div>
 
-            {/* Columna derecha — Información */}
+            {/* Columna derecha */}
             <div className="col-12 col-md-8">
-
-              {/* Breadcrumb */}
               <div className="d-flex align-items-center gap-2 mb-3">
                 <span onClick={() => navigate('/')} style={{ color: 'var(--muted)', fontSize: '0.82rem', cursor: 'pointer' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>Listado</span>
                 <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>›</span>
@@ -152,47 +125,27 @@ function DetalleLibro() {
               </div>
 
               <div className="d-flex flex-wrap gap-2 mb-4">
-                {libro.genero && (
-                  <span style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: '20px', padding: '4px 14px', fontSize: '0.78rem' }}>{libro.genero}</span>
-                )}
-                {libro.anio && (
-                  <span style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: '20px', padding: '4px 14px', fontSize: '0.78rem' }}>{libro.anio}</span>
-                )}
-                {libro.rating === 5 && (
-                  <span style={{ background: 'rgba(244,196,48,0.1)', border: '1px solid rgba(244,196,48,0.25)', color: 'var(--gold)', borderRadius: '20px', padding: '4px 14px', fontSize: '0.78rem', fontWeight: 600 }}>★ Clásico</span>
-                )}
+                {libro.genero && <span style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: '20px', padding: '4px 14px', fontSize: '0.78rem' }}>{libro.genero}</span>}
+                {libro.anio && <span style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: '20px', padding: '4px 14px', fontSize: '0.78rem' }}>{libro.anio}</span>}
+                {libro.rating === 5 && <span style={{ background: 'rgba(244,196,48,0.1)', border: '1px solid rgba(244,196,48,0.25)', color: 'var(--gold)', borderRadius: '20px', padding: '4px 14px', fontSize: '0.78rem', fontWeight: 600 }}>★ Clásico</span>}
               </div>
 
-              {/* Botones de acción */}
+              {/* Botones — sin Editar */}
               <div className="d-flex gap-2 flex-wrap">
-                <button
-                  onClick={() => navigate('/')}
+                <button onClick={() => navigate('/')}
                   style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: '10px', padding: '9px 20px', fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}
-                >
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}>
                   <i className="bi bi-arrow-left me-2"></i>Volver al listado
                 </button>
 
-                <button
-                  onClick={() => navigate(`/editar/${libro.id}`)}
-                  style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--blue-acc)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '10px', padding: '9px 20px', fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,130,246,0.25)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(59,130,246,0.15)'}
-                >
-                  <i className="bi bi-pencil-fill me-2"></i>Editar
-                </button>
-
-                <button
-                  onClick={() => setModalVisible(true)}
+                <button onClick={() => setModalVisible(true)}
                   style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--red-acc)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '10px', padding: '9px 20px', fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.25)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.15)'}
-                >
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.15)'}>
                   <i className="bi bi-trash3-fill me-2"></i>Eliminar
                 </button>
               </div>
-
             </div>
           </div>
         ) : null}
@@ -207,12 +160,7 @@ function DetalleLibro() {
         onCancelar={() => setModalVisible(false)}
       />
 
-      <Toast
-        visible={toast.visible}
-        mensaje={toast.mensaje}
-        tipo={toast.tipo}
-        onClose={() => setToast(prev => ({ ...prev, visible: false }))}
-      />
+      <Toast visible={toast.visible} mensaje={toast.mensaje} tipo={toast.tipo} onClose={() => setToast(prev => ({ ...prev, visible: false }))} />
     </div>
   )
 }

@@ -74,13 +74,16 @@ function Navegacion({ onBuscar }) {
             <Link to="/" style={estiloLink('/')}>
               <i className="bi bi-collection me-1"></i>Colección
             </Link>
+            <Link to="/buscar" style={estiloLink('/buscar')}>
+              <i className="bi bi-search me-1"></i>Buscar
+            </Link>
             <Link to="/agregar" style={estiloLink('/agregar')}>
               <i className="bi bi-plus-lg me-1"></i>Agregar
             </Link>
           </div>
         )}
 
-        {/* Buscador — solo si está logueado */}
+        {/* Buscador de colección — solo si está logueado */}
         {logueado && (
           <div
             className="d-flex align-items-center"
@@ -107,7 +110,7 @@ function Navegacion({ onBuscar }) {
               type="text"
               value={textoBusqueda}
               onChange={e => handleBusqueda(e.target.value)}
-              placeholder="Buscar libros..."
+              placeholder="Buscar en mi colección..."
               style={{
                 background: 'transparent',
                 border: 'none',
