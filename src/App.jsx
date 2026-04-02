@@ -12,8 +12,7 @@ import ListadoLibros      from './libros/ListadoLibros'
 import AgregarLibro       from './libros/AgregarLibro'
 import DetalleLibro       from './libros/DetalleLibro'
 import EditarLibro        from './libros/EditarLibro'
-import Login              from './libros/Login'
-import Registro           from './libros/Registro'
+import AuthPage from './libros/AuthPage'
 import PaginaNoEncontrada from './componentes/PaginaNoEncontrada'
 
 function App() {
@@ -27,8 +26,8 @@ function App() {
         <Routes>
 
           {/* Rutas PÚBLICAS — cualquiera puede verlas sin estar logueado */}
-          <Route path="/login"    element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
+          <Route path="/login"    element={<AuthPage />} />
+          <Route path="/registro" element={<AuthPage />} />
 
           {/* Rutas PROTEGIDAS — solo usuarios logueados pueden verlas */}
           {/* RutaProtegida actúa como el guardia — si no estás logueado, te manda al login */}
