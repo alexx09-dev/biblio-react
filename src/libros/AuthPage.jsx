@@ -58,7 +58,11 @@ function AuthPage() {
         })
       }
       login(data.access_token, data.usuario)
-      navigate('/')
+      if (modo === 'registro') {
+        navigate('/onboarding')
+      } else {
+        navigate('/')
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Ocurrió un error. Intentá de nuevo.')
     } finally {

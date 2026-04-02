@@ -14,6 +14,7 @@ import DetalleLibro       from './libros/DetalleLibro'
 import EditarLibro        from './libros/EditarLibro'
 import AuthPage from './libros/AuthPage'
 import PaginaNoEncontrada from './componentes/PaginaNoEncontrada'
+import Onboarding from './libros/Onboarding'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
@@ -49,6 +50,11 @@ function App() {
           <Route path="/editar/:id" element={
             <RutaProtegida>
               <EditarLibro />
+            </RutaProtegida>
+          } />
+          <Route path="/onboarding" element={
+            <RutaProtegida>
+              <Onboarding />
             </RutaProtegida>
           } />
 
