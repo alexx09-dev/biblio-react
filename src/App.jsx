@@ -9,6 +9,7 @@ import DetalleLibro           from './libros/DetalleLibro'
 import AuthPage               from './libros/AuthPage'
 import Onboarding             from './libros/Onboarding'
 import BuscarLibros           from './libros/BuscarLibros'
+import PerfilUsuario          from './libros/PerfilUsuario'
 import PaginaNoEncontrada     from './componentes/PaginaNoEncontrada'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/libros/:id" element={<RutaProtegida><DetalleLibro /></RutaProtegida>} />
           <Route path="/buscar" element={<RutaProtegida><BuscarLibros /></RutaProtegida>} />
           <Route path="/onboarding" element={<RutaProtegida><Onboarding /></RutaProtegida>} />
+          <Route path="/perfil" element={<RutaProtegida><PerfilUsuario /></RutaProtegida>} />
 
           <Route path="*" element={<PaginaNoEncontrada />} />
         </Routes>

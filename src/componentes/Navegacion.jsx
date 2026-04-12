@@ -77,9 +77,6 @@ function Navegacion({ onBuscar }) {
             <Link to="/buscar" style={estiloLink('/buscar')}>
               <i className="bi bi-search me-1"></i>Buscar
             </Link>
-            <Link to="/agregar" style={estiloLink('/agregar')}>
-              <i className="bi bi-plus-lg me-1"></i>Agregar
-            </Link>
           </div>
         )}
 

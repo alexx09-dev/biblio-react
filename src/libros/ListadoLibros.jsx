@@ -174,27 +174,81 @@ function ListadoLibros({ busqueda = '' }) {
 
       {/* Tabs de filtrado */}
       {!cargando && libros.length > 0 && (
-        <div className="mb-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {generosUnicos.length > 0 && (
-            <div>
-              <p style={{ color: 'var(--muted)', fontSize: '0.75rem', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Géneros</p>
-              <div className="d-flex flex-wrap gap-2">
-                <Chip label="Todos" activo={!generoActivo} onClick={() => setGeneroActivo(null)} />
-                {generosUnicos.map(g => (
-                  <Chip key={g} label={g} activo={generoActivo === g} onClick={() => setGeneroActivo(generoActivo === g ? null : g)} />
-                ))}
+        <div className="mb-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem 1.5rem' }}>
+          <div className="row g-3">
+
+            {/* Géneros */}
+            {generosUnicos.length > 0 && (
+              <div className="col-12 col-md-6">
+                <div className="d-flex align-items-center gap-2 mb-2">
+                  <i className="bi bi-bookmark-fill" style={{ color: 'var(--gold)', fontSize: '0.75rem' }}></i>
+                  <p style={{ color: 'var(--muted)', fontSize: '0.72rem', marginBottom: 0, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Géneros</p>
+                  {generoActivo && (
+                    <button
+                      onClick={() => setGeneroActivo(null)}
+                      style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--gold)', fontSize: '0.72rem', cursor: 'pointer', padding: '0 4px' }}
+                    >
+                      <i className="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  <Chip label="Todos" activo={!generoActivo} onClick={() => setGeneroActivo(null)} />
+                  {generosUnicos.map(g => (
+                    <Chip key={g} label={g} activo={generoActivo === g} onClick={() => setGeneroActivo(generoActivo === g ? null : g)} />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          {autoresUnicos.length > 0 && (
-            <div>
-              <p style={{ color: 'var(--muted)', fontSize: '0.75rem', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Autores</p>
-              <div className="d-flex flex-wrap gap-2">
-                <Chip label="Todos" activo={!autorActivo} onClick={() => setAutorActivo(null)} />
-                {autoresUnicos.map(a => (
-                  <Chip key={a} label={a} activo={autorActivo === a} onClick={() => setAutorActivo(autorActivo === a ? null : a)} />
-                ))}
+            )}
+
+            {/* Divider vertical en md+ */}
+            {generosUnicos.length > 0 && autoresUnicos.length > 0 && (
+              <div className="col-auto d-none d-md-flex align-items-stretch">
+                <div style={{ width: '1px', background: 'var(--border)', margin: '0 0.5rem' }} />
               </div>
+            )}
+
+            {/* Autores */}
+            {autoresUnicos.length > 0 && (
+              <div className="col-12 col-md">
+                <div className="d-flex align-items-center gap-2 mb-2">
+                  <i className="bi bi-person-fill" style={{ color: 'var(--gold)', fontSize: '0.75rem' }}></i>
+                  <p style={{ color: 'var(--muted)', fontSize: '0.72rem', marginBottom: 0, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Autores</p>
+                  {autorActivo && (
+                    <button
+                      onClick={() => setAutorActivo(null)}
+                      style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--gold)', fontSize: '0.72rem', cursor: 'pointer', padding: '0 4px' }}
+                    >
+                      <i className="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  <Chip label="Todos" activo={!autorActivo} onClick={() => setAutorActivo(null)} />
+                  {autoresUnicos.map(a => (
+                    <Chip key={a} label={a} activo={autorActivo === a} onClick={() => setAutorActivo(autorActivo === a ? null : a)} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* Indicador de filtros activos */}
+          {(generoActivo || autorActivo) && (
+            <div className="d-flex align-items-center gap-2 mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
+              <span style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>
+                <i className="bi bi-funnel-fill me-1" style={{ color: 'var(--gold)' }}></i>
+                Mostrando {librosFiltrados.length} de {libros.length} libros
+              </span>
+              <button
+                onClick={() => { setGeneroActivo(null); setAutorActivo(null) }}
+                style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: '6px', padding: '3px 10px', cursor: 'pointer', fontSize: '0.75rem', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}
+              >
+                <i className="bi bi-x me-1"></i>Limpiar todo
+              </button>
             </div>
           )}
         </div>
@@ -236,9 +290,6 @@ function ListadoLibros({ busqueda = '' }) {
               >
                 {/* Portada */}
                 <div style={{ position: 'relative', aspectRatio: '2/3', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, background: 'rgba(8,11,20,0.7)', backdropFilter: 'blur(6px)', color: 'var(--muted)', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '20px', border: '1px solid var(--border)' }}>
-                    #{String(libro.id).padStart(3, '0')}
-                  </div>
                   {libro.isbn && !portadasError[libro.id] ? (
                     <img
                       src={`https://covers.openlibrary.org/b/isbn/${libro.isbn}-L.jpg`}
